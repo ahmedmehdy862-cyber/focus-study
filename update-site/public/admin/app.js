@@ -28,6 +28,8 @@ function errorText(error) {
     version_code_must_increase: "رقم الإصدار الداخلي يجب أن يكون أكبر من الإصدار المنشور.",
     release_fields_required: "أكمل بيانات الإصدار ورابط المتجر وملاحظات التحديث.",
     invalid_store_url: "أدخل رابط متجر يبدأ بـ HTTPS.",
+    invalid_apk_url: "أدخل رابط HTTPS مباشرًا ينتهي بـ .apk.",
+    apk_upload_failed: "تعذر رفع ملف APK. تحقق من صلاحية الملف والاتصال.",
     store_link_save_failed: "تعذر حفظ رابط المتجر. تحقق من الرابط وحاول مجددًا.",
     authentication_required: "انتهت الجلسة. سجّل الدخول من جديد."
   };

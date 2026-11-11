@@ -27,7 +27,7 @@ module.exports = async function publishRelease(req, res) {
     if (parsedUrl.protocol !== "https:" || !parsedUrl.hostname || parsedUrl.username || parsedUrl.password) return json(res, 400, { error: "invalid_store_url" });
     let parsedApkUrl;
     try { parsedApkUrl = new URL(apkUrl); } catch { return json(res, 400, { error: "invalid_apk_url" }); }
-    if (parsedApkUrl.protocol !== "https:" || !parsedApkUrl.hostname || parsedApkUrl.username || parsedApkUrl.password) return json(res, 400, { error: "invalid_apk_url" });
+    if (parsedApkUrl.protocol !== "https:" || !parsedApkUrl.hostname || parsedApkUrl.username || parsedApkUrl.password || !parsedApkUrl.pathname.toLowerCase().endsWith(".apk")) return json(res, 400, { error: "invalid_apk_url" });
 
     const host = String(req.headers["x-forwarded-host"] || req.headers.host || "").split(",")[0].trim();
     if (!host) return json(res, 400, { error: "release_host_missing" });

@@ -17,7 +17,7 @@ module.exports = async function saveStoreLink(req, res) {
     if (apkUrl) {
       let parsedApkUrl;
       try { parsedApkUrl = new URL(apkUrl); } catch { return json(res, 400, { error: "invalid_apk_url" }); }
-      if (parsedApkUrl.protocol !== "https:" || !parsedApkUrl.hostname || parsedApkUrl.username || parsedApkUrl.password) return json(res, 400, { error: "invalid_apk_url" });
+      if (parsedApkUrl.protocol !== "https:" || !parsedApkUrl.hostname || parsedApkUrl.username || parsedApkUrl.password || !parsedApkUrl.pathname.toLowerCase().endsWith(".apk")) return json(res, 400, { error: "invalid_apk_url" });
     }
     const current = await readLatestRelease();
     const host = String(req.headers["x-forwarded-host"] || req.headers.host || "").split(",")[0].trim();
