@@ -31,7 +31,7 @@ The admin account uses the production environment variables `ADMIN_USERNAME`, `A
 
 The update feed is connected to `https://update-site-sigma.vercel.app/api/latest`. Older installed builds that predate the update checker cannot receive its notifications. Keep the package ID and signing key consistent across releases so store updates can be installed over existing versions.
 
-The current release is `0.10.0` (`versionCode` 11). The next source build is `0.11.0` (`versionCode` 12) and opens store links instead of APK downloads. The app icon and website mark use the same shield and bolt geometry as the in-app logo.
+The current release is `0.12.0` (`versionCode` 13). It adds on-device prayer time calculation from approximate location, configurable calculation methods, and local prayer reminders. The app icon and website mark use the same shield and bolt geometry as the in-app logo.
 
 The app's signing key is private and must remain consistent with the signing configuration used by the connected store.
 

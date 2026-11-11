@@ -1,10 +1,10 @@
 {
   "packageName": "com.focusstudy.poc",
-  "versionCode": 12,
-  "versionName": "0.11.0",
+  "versionCode": 13,
+  "versionName": "0.12.0",
   "storeUrl": "https://qubixstore.vercel.app/focus-study-updates",
-  "apkUrl": "https://qubixstore.vercel.app/releases/focus-study-0.11.0.apk",
+  "apkUrl": "https://github.com/ahmedmehdy862-cyber/focus-study/releases/download/focus-v0.12.0/Focus-Study.apk",
   "description": "نظّم مهامك وموادك وجلسات تركيزك وخطتك الدراسية في مساحة واحدة.",
   "releasePageUrl": "https://update-site-sigma.vercel.app/#download",
-  "releaseNotes": "تحديث تنظيم الأقسام وسلاسة التنقل، وتطوير التقويم والإشعارات والتخصيص، مع ربط إشعارات التحديث بصفحة Focus Study في QUBIXStore."
+  "releaseNotes": "مواقيت الصلاة حسب الموقع التقريبي بحساب محلي، وتذكير اختياري بمواعيد الصلاة. اختر طريقة الحساب، وتبقى إحداثياتك على الجهاز."
 }
