@@ -1,0 +1,58 @@
+<!doctype html>
+<html lang="ar" dir="rtl">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="theme-color" content="#0a1020">
+  <meta name="robots" content="noindex, nofollow">
+  <link rel="icon" type="image/svg+xml" href="/brand.svg">
+  <title>إدارة التحديثات · Focus Study</title>
+  <style>
+    :root{color-scheme:dark;--bg:#090e1a;--panel:#111a2c;--panel2:#17243a;--line:#2b3b59;--ink:#f4f7ff;--muted:#aab8d0;--blue:#65a0ff;--violet:#9b7bff;--mint:#7fe3c2;--red:#ff9f9f}
+    *{box-sizing:border-box}body{margin:0;min-height:100vh;background:radial-gradient(ellipse at 8% 0%,#172d54 0,transparent 36%),radial-gradient(ellipse at 90% 100%,#321d61 0,transparent 35%),var(--bg);color:var(--ink);font:16px/1.65 system-ui,-apple-system,"Segoe UI",Tahoma,sans-serif}.wrap{width:min(860px,calc(100% - 32px));margin:auto}header{height:88px;display:flex;align-items:center;justify-content:space-between}.brand{display:flex;align-items:center;gap:12px;font-weight:850}.logo{width:42px;height:42px;border-radius:14px;overflow:hidden;box-shadow:0 10px 28px #467dff30}.logo img{width:100%;height:100%;display:block}.back{color:#b9c9e5;text-decoration:none;font-size:14px}main{padding:28px 0 64px}.intro{margin-bottom:24px}.eyebrow{display:inline-flex;padding:5px 12px;border:1px solid #9b7bff55;border-radius:999px;color:#c5b4ff;font-size:12px;font-weight:750}h1{font-size:clamp(30px,5vw,42px);line-height:1.2;margin:14px 0 8px;letter-spacing:-.6px}.intro p,.hint{color:var(--muted);margin:0}.panel{border:1px solid #ffffff15;border-radius:26px;background:linear-gradient(145deg,#141f33ed,#0f1728f5);box-shadow:0 28px 75px #02050b55;padding:clamp(20px,4vw,32px)}.panel h2{margin:0 0 5px;font-size:21px}.panel-head{display:flex;align-items:center;justify-content:space-between;gap:16px;margin-bottom:22px}.release-pill{display:inline-flex;padding:5px 11px;border:1px solid #7fe3c244;border-radius:999px;color:var(--mint);font-size:12px;white-space:nowrap}.field{display:grid;gap:7px;margin:16px 0}.field label{font-weight:700;font-size:14px}.field input,.field textarea{width:100%;border:1px solid var(--line);border-radius:14px;background:#0b1322;color:var(--ink);padding:13px 14px;font:inherit;outline:none}.field input:focus,.field textarea:focus{border-color:var(--blue);box-shadow:0 0 0 3px #65a0ff1b}.field textarea{min-height:116px;resize:vertical}.field input[type=file]{padding:11px}.split{display:grid;grid-template-columns:1fr 1fr;gap:14px}.file-note{font-size:12px;color:#8799b7}.button{display:inline-flex;align-items:center;justify-content:center;gap:9px;min-height:50px;border:0;border-radius:15px;padding:0 20px;background:linear-gradient(110deg,#3983ff,#7654e8);color:#fff;font:inherit;font-weight:800;text-decoration:none;cursor:pointer;box-shadow:0 10px 26px #4b77ff2b}.button:hover{filter:brightness(1.08)}.button:disabled{opacity:.56;cursor:wait}.button.secondary{background:#ffffff08;border:1px solid #ffffff20;box-shadow:none;color:#d9e2f4;min-height:40px;font-size:13px}.row-actions{display:flex;align-items:center;justify-content:space-between;gap:14px;margin-top:22px}.status{min-height:26px;margin-top:16px;color:var(--muted);font-size:14px}.status.error{color:var(--red)}.status.ok{color:var(--mint)}.hidden{display:none!important}.security{display:flex;gap:11px;align-items:flex-start;margin-top:20px;padding:14px 16px;border-radius:16px;background:#ffffff06;border:1px solid #ffffff10;color:#aab8d0;font-size:13px}.security span:first-child{font-size:19px}.upload-progress{height:7px;margin-top:10px;border-radius:99px;background:#ffffff12;overflow:hidden}.upload-progress>span{display:block;height:100%;width:0;background:linear-gradient(90deg,#3885ff,#8c5aff);transition:width .15s ease}.footer{text-align:center;margin-top:24px;color:#8492a9;font-size:12px}@media(max-width:600px){header{height:72px}.split{grid-template-columns:1fr;gap:0}.panel-head{align-items:flex-start;flex-direction:column}.row-actions{align-items:stretch;flex-direction:column-reverse}.row-actions .button{width:100%}.back{font-size:12px}}
+  </style>
+</head>
+<body>
+  <div class="wrap">
+    <header><div class="brand"><span class="logo"><img src="/brand.svg" alt=""></span><span>Focus Study</span></div><a class="back" href="/">العودة لموقع التحديثات ←</a></header>
+    <main>
+      <div class="intro"><span class="eyebrow">لوحة إدارة الإصدارات</span><h1>اربط تحديثاتك بالمتجر</h1><p>انشر التطبيق أولًا من حساب المطوّر في المتجر، ثم أضف رقم الإصدار ورابط صفحة التطبيق ليصل إشعار التحديث للطلاب.</p></div>
+      <section id="login-panel" class="panel">
+        <div class="panel-head"><div><h2>دخول الإدارة</h2><p class="hint">هذه الصفحة مخصصة لمسؤول التطبيق فقط.</p></div></div>
+        <form id="login-form" autocomplete="on">
+          <div class="field"><label for="username">اسم المستخدم</label><input id="username" name="username" autocomplete="username" required></div>
+          <div class="field"><label for="password">كلمة المرور</label><input id="password" name="password" type="password" autocomplete="current-password" required></div>
+          <button class="button" type="submit">دخول آمن</button>
+        </form>
+        <div id="login-status" class="status" role="status" aria-live="polite"></div>
+      </section>
+
+      <section id="admin-panel" class="panel hidden">
+        <div class="panel-head"><div><h2>نشر إصدار جديد</h2><p id="current-release" class="hint">جارٍ قراءة الإصدار الحالي…</p></div><span class="release-pill">جلسة إدارة آمنة</span></div>
+        <form id="store-link-form">
+          <div class="field"><label for="store-url">رابط صفحة التطبيق في QUBIXStore</label><input id="store-url" type="url" inputmode="url" value="https://qubixstore.vercel.app/focus-study-updates" required><span class="file-note">التطبيق سيفتح صفحة Focus Study في المتجر عند طلب التحديث.</span></div>
+          <div class="field"><label for="apk-file">ارفع أحدث ملف APK</label><input id="apk-file" type="file" accept=".apk,application/vnd.android.package-archive"><span class="file-note">يُرفع بأمان إلى Vercel Blob، حتى 200 ميجابايت. يمكن بدلًا منه إدخال رابط APK عام في الحقل التالي.</span></div>
+          <div class="field"><label for="apk-url">أو رابط APK عام</label><input id="apk-url" type="url" inputmode="url" placeholder="https://github.com/…/releases/download/…/app-release.apk"></div>
+          <div class="field"><label for="app-description">وصف التطبيق في المتجر</label><textarea id="app-description" maxlength="500" placeholder="نظّم مهامك وموادك وجلسات تركيزك وخطتك الدراسية في مساحة واحدة."></textarea></div>
+          <button id="save-store-link" class="button secondary" type="submit">حفظ روابط الإصدار الحالي</button>
+        </form>
+        <div id="store-status" class="status" role="status" aria-live="polite"></div>
+        <hr style="border:0;border-top:1px solid #ffffff14;margin:24px 0">
+        <form id="release-form">
+          <div class="split">
+            <div class="field"><label for="version-name">اسم الإصدار المنشور في المتجر</label><input id="version-name" inputmode="decimal" placeholder="0.11.0" pattern="\d+\.\d+\.\d+" required></div>
+            <div class="field"><label for="version-code">رقم الإصدار المنشور في المتجر</label><input id="version-code" type="number" min="1" step="1" placeholder="12" required></div>
+          </div>
+          <p class="hint">أدخل الرقمين نفسيهما اللذين رفعتهما إلى المتجر، واجعل رقم الإصدار الداخلي أكبر من الحالي.</p>
+          <div class="field"><label for="release-notes">ما الجديد؟</label><textarea id="release-notes" maxlength="1600" placeholder="اكتب التحسينات والإصلاحات التي سيلاحظها الطالب…" required></textarea></div>
+          <div class="row-actions"><button id="logout" class="button secondary" type="button">تسجيل الخروج</button><button id="publish" class="button" type="submit">نشر إشعار التحديث</button></div>
+        </form>
+        <div id="publish-status" class="status" role="status" aria-live="polite"></div>
+        <div class="security"><span>🔒</span><span>هذا السجل يحدّث API التطبيق وبطاقة QUBIXStore معًا. ملف APK يستضاف في GitHub Release، وزر إشعار التطبيق يظل يفتح صفحة المتجر.</span></div>
+      </section>
+      <p class="footer">Focus Study · تحديثاتك بأمان وبخطوات واضحة</p>
+    </main>
+  </div>
+  <script type="module" src="/admin/app.bundle.js"></script>
+</body>
+</html>

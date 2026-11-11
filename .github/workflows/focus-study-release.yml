@@ -1,0 +1,105 @@
+name: Build and sync Focus Study release
+
+on:
+  push:
+    tags:
+      - "focus-v*"
+
+permissions:
+  contents: write
+
+jobs:
+  release:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check out source
+        uses: actions/checkout@v4
+
+      - name: Set up Java
+        uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: "17"
+
+      - name: Restore Android release signing key
+        env:
+          KEYSTORE_BASE64: ${{ secrets.ANDROID_KEYSTORE_BASE64 }}
+          KEYSTORE_PASSWORD: ${{ secrets.ANDROID_KEYSTORE_PASSWORD }}
+          KEY_ALIAS: ${{ secrets.ANDROID_KEY_ALIAS }}
+          KEY_PASSWORD: ${{ secrets.ANDROID_KEY_PASSWORD }}
+        run: |
+          test -n "$KEYSTORE_BASE64"
+          mkdir -p "$HOME/.focusstudy"
+          printf '%s' "$KEYSTORE_BASE64" | base64 --decode > "$HOME/.focusstudy/release.jks"
+          cat > "$HOME/.focusstudy/keystore.properties" <<EOF
+          storeFile=$HOME/.focusstudy/release.jks
+          storePassword=$KEYSTORE_PASSWORD
+          keyAlias=$KEY_ALIAS
+          keyPassword=$KEY_PASSWORD
+          EOF
+          chmod 600 "$HOME/.focusstudy/release.jks" "$HOME/.focusstudy/keystore.properties"
+
+      - name: Build signed release APK
+        run: ./gradlew --no-daemon assembleRelease -PfocusStudyUpdateFeedUrl=https://update-site-sigma.vercel.app/api/latest
+
+      - name: Read release metadata
+        id: metadata
+        env:
+          TAG_NAME: ${{ github.ref_name }}
+        run: |
+          python3 - <<'PY'
+          import os, re
+          text = open("app/build.gradle.kts", encoding="utf-8").read()
+          code = re.search(r"versionCode\s*=\s*(\d+)", text)
+          name = re.search(r'versionName\s*=\s*"([0-9]+\.[0-9]+\.[0-9]+)"', text)
+          if not code or not name:
+              raise SystemExit("Could not read versionCode/versionName from app/build.gradle.kts")
+          tag = os.environ["TAG_NAME"]
+          if tag != f"focus-v{name.group(1)}":
+              raise SystemExit(f"Tag {tag} does not match app version {name.group(1)}")
+          with open(os.environ["GITHUB_OUTPUT"], "a", encoding="utf-8") as out:
+              out.write(f"version_code={code.group(1)}\nversion_name={name.group(1)}\n")
+          PY
+
+      - name: Publish APK as a GitHub Release
+        env:
+          GH_TOKEN: ${{ github.token }}
+          TAG_NAME: ${{ github.ref_name }}
+          VERSION_NAME: ${{ steps.metadata.outputs.version_name }}
+        run: |
+          NOTES="$(git log -1 --pretty=%B)"
+          if gh release view "$TAG_NAME" >/dev/null 2>&1; then
+            gh release upload "$TAG_NAME" app/build/outputs/apk/release/app-release.apk#Focus-Study.apk --clobber
+            gh release edit "$TAG_NAME" --title "Focus Study $VERSION_NAME" --notes "$NOTES"
+          else
+            gh release create "$TAG_NAME" app/build/outputs/apk/release/app-release.apk#Focus-Study.apk --title "Focus Study $VERSION_NAME" --notes "$NOTES"
+          fi
+
+      - name: Sync central feed for the app and QUBIXStore
+        env:
+          SYNC_TOKEN: ${{ secrets.FOCUS_RELEASE_SYNC_TOKEN }}
+          REPOSITORY: ${{ github.repository }}
+          TAG_NAME: ${{ github.ref_name }}
+          VERSION_NAME: ${{ steps.metadata.outputs.version_name }}
+          VERSION_CODE: ${{ steps.metadata.outputs.version_code }}
+        run: |
+          test -n "$SYNC_TOKEN"
+          NOTES="$(git log -1 --pretty=%B)"
+          APK_URL="https://github.com/${REPOSITORY}/releases/download/${TAG_NAME}/Focus-Study.apk"
+          export NOTES APK_URL
+          python3 - <<'PY' > /tmp/focus-release.json
+          import json, os
+          print(json.dumps({
+            "versionCode": int(os.environ["VERSION_CODE"]),
+            "versionName": os.environ["VERSION_NAME"],
+            "releaseNotes": os.environ.get("NOTES", "تحسينات وإصلاحات جديدة."),
+            "apkUrl": os.environ["APK_URL"],
+            "storeUrl": "https://qubixstore.vercel.app/focus-study-updates",
+            "description": "نظّم مهامك وموادك وجلسات تركيزك وخطتك الدراسية في مساحة واحدة."
+          }, ensure_ascii=False))
+          PY
+          curl --fail-with-body --silent --show-error \
+            -H "Authorization: Bearer $SYNC_TOKEN" \
+            -H "Content-Type: application/json" \
+            --data-binary @/tmp/focus-release.json \
+            https://update-site-sigma.vercel.app/api/admin/publish-ci

@@ -1,0 +1,7 @@
+<resources>
+    <string name="app_name">Focus Study</string>
+    <string name="accessibility_label">منع التطبيقات أثناء التركيز</string>
+    <string name="accessibility_description">يمنع فتح التطبيقات التي اخترتها داخل جلسة التركيز: يعرف اسم التطبيق المفتوح فقط، ويخفيه بشاشة إغلاق، ويعيدك إلى الشاشة الرئيسية حتى تنتهي الجلسة. لا يقرأ محتوى الشاشة ولا الرسائل ولا المدخلات، ولا يرسل أي بيانات خارج الجهاز.</string>
+    <string name="device_admin_label">Focus Study — تعليق التطبيقات</string>
+    <string name="device_admin_description">يُستخدم فقط عند تفعيل وضع Device Owner الاختياري: يعلّق التطبيقات التي تختارها أثناء جلسة التركيز ويعيدها بعد انتهاء المدة.</string>
+</resources>
