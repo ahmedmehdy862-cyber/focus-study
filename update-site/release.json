@@ -1,8 +1,10 @@
 {
   "packageName": "com.focusstudy.poc",
-  "versionCode": 11,
-  "versionName": "0.10.0",
-  "storeUrl": "",
-  "releasePageUrl": "/#download",
-  "releaseNotes": "توحيد شعار Focus Study وتجهيز التحديثات لتتم عبر المتجر المرتبط بالتطبيق."
+  "versionCode": 12,
+  "versionName": "0.11.0",
+  "storeUrl": "https://qubixstore.vercel.app/focus-study-updates",
+  "apkUrl": "https://qubixstore.vercel.app/releases/focus-study-0.11.0.apk",
+  "description": "نظّم مهامك وموادك وجلسات تركيزك وخطتك الدراسية في مساحة واحدة.",
+  "releasePageUrl": "https://update-site-sigma.vercel.app/#download",
+  "releaseNotes": "تحديث تنظيم الأقسام وسلاسة التنقل، وتطوير التقويم والإشعارات والتخصيص، مع ربط إشعارات التحديث بصفحة Focus Study في QUBIXStore."
 }
