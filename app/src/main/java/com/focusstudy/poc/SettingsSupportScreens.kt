@@ -7,6 +7,10 @@ import android.content.Intent
 import android.net.Uri
 import android.app.TimePickerDialog
 import android.widget.Toast
+import android.Manifest
+import android.content.pm.PackageManager
+import androidx.activity.compose.rememberLauncherForActivityResult
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.horizontalScroll
@@ -35,6 +39,7 @@ import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Slider
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
+import androidx.compose.material3.Checkbox
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -42,6 +47,7 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.text.style.TextAlign
 import kotlinx.coroutines.Dispatchers
@@ -56,6 +62,122 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 
 private const val SUPPORT_USERNAME = "techsup402"
+
+@Composable
+internal fun PrayerTimesScreen(onBack: () -> Unit) {
+    val context = LocalContext.current
+    val scope = rememberCoroutineScope()
+    var refresh by remember { mutableStateOf(0) }
+    fun coordinateText(value: Double) = String.format(java.util.Locale.US, "%.5f", value)
+    var latitude by rememberSaveable { mutableStateOf(if (PrayerPrefs.latitude(context).isFinite()) coordinateText(PrayerPrefs.latitude(context)) else "") }
+    var longitude by rememberSaveable { mutableStateOf(if (PrayerPrefs.longitude(context).isFinite()) coordinateText(PrayerPrefs.longitude(context)) else "") }
+    var method by rememberSaveable { mutableStateOf(PrayerPrefs.method(context)) }
+    var enabled by rememberSaveable { mutableStateOf(PrayerPrefs.enabled(context)) }
+    var message by remember { mutableStateOf("") }
+    var loading by remember { mutableStateOf(false) }
+    val locationPermission = rememberLauncherForActivityResult(ActivityResultContracts.RequestPermission()) { granted ->
+        if (granted) scope.launch {
+            loading = true
+            val location = currentApproximateLocation(context)
+            loading = false
+            if (location != null) {
+                latitude = coordinateText(location.latitude); longitude = coordinateText(location.longitude)
+                PrayerPrefs.saveLocation(context, location.latitude, location.longitude)
+                PrayerReminderScheduler.schedule(context); refresh++
+                message = "تم حفظ الموقع على جهازك. لا نرسل إحداثياتك إلى أي خادم."
+            } else message = "تعذر تحديد الموقع الآن. أدخل الإحداثيات يدويًا أو حاول قرب نافذة."
+        } else message = "لم يُمنح إذن الموقع. يمكنك إدخال الإحداثيات يدويًا."
+    }
+    val notificationPermission = rememberLauncherForActivityResult(ActivityResultContracts.RequestPermission()) { }
+    val hasLocation = PrayerPrefs.latitude(context).isFinite() && PrayerPrefs.longitude(context).isFinite()
+    val prayers = remember(refresh) { runCatching { PrayerCalculator.today(context) }.getOrNull() }
+
+    Column(Modifier.fillMaxSize().padding(horizontal = 20.dp, vertical = 14.dp)) {
+        Row(verticalAlignment = Alignment.CenterVertically) {
+            TextButton(onClick = onBack) { Text("رجوع") }
+            Spacer(Modifier.width(8.dp))
+            Text("مواقيت الصلاة", style = MaterialTheme.typography.titleLarge, fontWeight = FontWeight.Bold)
+        }
+        Spacer(Modifier.height(10.dp))
+        androidx.compose.foundation.lazy.LazyColumn(
+            modifier = Modifier.weight(1f), verticalArrangement = Arrangement.spacedBy(14.dp)
+        ) {
+            item {
+                PreferenceCard("مواقيت اليوم", "حساب فلكي محلي يتحدث حسب التاريخ والمنطقة الزمنية على جهازك.") {
+                    if (prayers == null) {
+                        Text("حدد موقعك التقريبي لعرض المواقيت.", color = FocusColors.TextSecondary)
+                    } else prayers.forEach { prayer ->
+                        Row(Modifier.fillMaxWidth().padding(vertical = 7.dp), horizontalArrangement = Arrangement.SpaceBetween) {
+                            Text(prayer.name, color = FocusColors.TextPrimary, fontWeight = FontWeight.Medium)
+                            Text(PrayerCalculator.format(prayer.atMillis), color = FocusColors.onTint(FocusColors.Blue))
+                        }
+                        if (prayer != prayers.last()) androidx.compose.material3.HorizontalDivider(color = FocusColors.SurfaceHigh)
+                    }
+                }
+            }
+            item {
+                PreferenceCard("الموقع وطريقة الحساب", "نطلب موقعًا تقريبيًا فقط عند ضغطك على الزر. الحساب والإحداثيات يبقيان على جهازك.") {
+                    Button(
+                        onClick = {
+                            if (androidx.core.content.ContextCompat.checkSelfPermission(context, Manifest.permission.ACCESS_COARSE_LOCATION) == PackageManager.PERMISSION_GRANTED) {
+                                scope.launch {
+                                    loading = true
+                                    val location = currentApproximateLocation(context)
+                                    loading = false
+                                    if (location != null) {
+                                        latitude = coordinateText(location.latitude); longitude = coordinateText(location.longitude)
+                                        PrayerPrefs.saveLocation(context, location.latitude, location.longitude)
+                                        PrayerReminderScheduler.schedule(context); refresh++
+                                        message = "تم حفظ الموقع على جهازك."
+                                    } else message = "تعذر تحديد الموقع؛ أدخل الإحداثيات يدويًا."
+                                }
+                            } else locationPermission.launch(Manifest.permission.ACCESS_COARSE_LOCATION)
+                        }, modifier = Modifier.fillMaxWidth(), shape = RoundedCornerShape(16.dp), enabled = !loading
+                    ) { Text(if (loading) "جارٍ تحديد الموقع…" else "استخدم موقعي التقريبي") }
+                    Spacer(Modifier.height(8.dp))
+                    Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
+                        OutlinedTextField(latitude, { latitude = it }, label = { Text("خط العرض") }, modifier = Modifier.weight(1f), singleLine = true, textStyle = MaterialTheme.typography.bodyLarge.copy(textDirection = androidx.compose.ui.text.style.TextDirection.Ltr), keyboardOptions = androidx.compose.foundation.text.KeyboardOptions(keyboardType = androidx.compose.ui.text.input.KeyboardType.Decimal))
+                        OutlinedTextField(longitude, { longitude = it }, label = { Text("خط الطول") }, modifier = Modifier.weight(1f), singleLine = true, textStyle = MaterialTheme.typography.bodyLarge.copy(textDirection = androidx.compose.ui.text.style.TextDirection.Ltr), keyboardOptions = androidx.compose.foundation.text.KeyboardOptions(keyboardType = androidx.compose.ui.text.input.KeyboardType.Decimal))
+                    }
+                    Spacer(Modifier.height(6.dp))
+                    Text("طريقة الحساب", color = FocusColors.TextSecondary)
+                    Row(Modifier.horizontalScroll(rememberScrollState()), horizontalArrangement = Arrangement.spacedBy(6.dp)) {
+                        listOf("EGYPTIAN" to "مصر", "MUSLIM_WORLD_LEAGUE" to "رابطة العالم الإسلامي", "UMM_AL_QURA" to "أم القرى", "KARACHI" to "كراتشي").forEach { (key, label) ->
+                            FilterChip(selected = method == key, onClick = {
+                                method = key; PrayerPrefs.saveMethod(context, key); PrayerReminderScheduler.schedule(context); refresh++
+                            }, label = { Text(label) })
+                        }
+                    }
+                    Button(onClick = {
+                        val lat = latitude.replace(',', '.').toDoubleOrNull(); val lon = longitude.replace(',', '.').toDoubleOrNull()
+                        if (lat == null || lon == null || lat !in -90.0..90.0 || lon !in -180.0..180.0) message = "تحقق من الإحداثيات: خط العرض بين ‎-90 و90، والطول بين ‎-180 و180."
+                        else {
+                            PrayerPrefs.saveLocation(context, lat, lon); PrayerPrefs.saveMethod(context, method)
+                            PrayerReminderScheduler.schedule(context); refresh++; message = "تم حفظ الموقع وطريقة الحساب."
+                        }
+                    }, modifier = Modifier.fillMaxWidth(), shape = RoundedCornerShape(16.dp)) { Text("حفظ الموقع والحساب") }
+                    if (message.isNotBlank()) Text(message, color = FocusColors.TextSecondary, style = MaterialTheme.typography.bodySmall)
+                }
+            }
+            item {
+                PreferenceCard("تذكير الصلاة", "تنبيه اختياري لكل صلاة قادمة. يعمل محليًا، ويُعاد ضبطه بعد إعادة تشغيل الجهاز.") {
+                    Row(Modifier.fillMaxWidth(), verticalAlignment = Alignment.CenterVertically) {
+                        Checkbox(checked = enabled, onCheckedChange = { checked ->
+                            enabled = checked && hasLocation
+                            if (checked && !hasLocation) message = "احفظ موقعك أولًا لتفعيل التذكير."
+                            else if (checked) {
+                                PrayerPrefs.setEnabled(context, true); PrayerReminderScheduler.schedule(context)
+                                if (android.os.Build.VERSION.SDK_INT >= 33 && androidx.core.content.ContextCompat.checkSelfPermission(context, Manifest.permission.POST_NOTIFICATIONS) != PackageManager.PERMISSION_GRANTED) notificationPermission.launch(Manifest.permission.POST_NOTIFICATIONS)
+                            } else { PrayerPrefs.setEnabled(context, false); PrayerReminderScheduler.schedule(context) }
+                        })
+                        Text("ذكّرني عند دخول وقت الصلاة", color = FocusColors.TextPrimary)
+                    }
+                    if (enabled && !hasLocation) Text("احفظ موقعًا صالحًا لتبدأ التنبيهات.", color = FocusColors.TextSecondary)
+                }
+            }
+        }
+    }
+}
 
 @Composable
 internal fun PersonalizationScreen(

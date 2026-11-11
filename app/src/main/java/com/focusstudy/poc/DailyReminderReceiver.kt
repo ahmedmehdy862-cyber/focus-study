@@ -245,8 +245,9 @@ class DailyReminderReceiver : BroadcastReceiver() {
 
 class FocusBootReceiver : BroadcastReceiver() {
     override fun onReceive(context: Context, intent: Intent?) {
-        if (intent?.action == Intent.ACTION_BOOT_COMPLETED) {
+        if (intent?.action in setOf(Intent.ACTION_BOOT_COMPLETED, Intent.ACTION_TIME_CHANGED, Intent.ACTION_TIMEZONE_CHANGED, Intent.ACTION_DATE_CHANGED)) {
             StudyNotificationScheduler.update(context, FocusPreferences.load(context))
+            PrayerReminderScheduler.schedule(context)
             AppUpdateManager.schedule(context)
         }
     }

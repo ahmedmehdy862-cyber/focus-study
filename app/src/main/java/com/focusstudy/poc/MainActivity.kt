@@ -431,6 +431,7 @@ private fun AppRoot(
     ) {
         StudyNotificationScheduler.update(context, preferences)
     }
+    LaunchedEffect(Unit) { PrayerReminderScheduler.schedule(context) }
 
     val session by SessionEngine.active.collectAsState()
 
@@ -537,8 +538,10 @@ private fun AppRoot(
                     onAnalytics = { openSecondary("analytics") },
                     onSettings = { openSecondary("settings") },
                     onSupport = { openSecondary("support") },
-                    onUpdates = { openSecondary("updates") }
+                    onUpdates = { openSecondary("updates") },
+                    onPrayerTimes = { openSecondary("prayer_times") }
                 )
+                "prayer_times" -> PrayerTimesScreen(onBack = { returnToPreviousTab() })
                 "updates" -> AppUpdatesScreen(onBack = { returnToPreviousTab() })
                 "settings" -> PersonalizationScreen(
                     current = preferences,
@@ -1085,7 +1088,8 @@ private fun MoreSectionsScreen(
     onAnalytics: () -> Unit,
     onSettings: () -> Unit,
     onSupport: () -> Unit,
-    onUpdates: () -> Unit
+    onUpdates: () -> Unit,
+    onPrayerTimes: () -> Unit
 ) {
     Column(Modifier.fillMaxSize().padding(horizontal = 18.dp, vertical = 20.dp)) {
         Text("المزيد", style = MaterialTheme.typography.headlineSmall, color = FocusColors.TextPrimary, fontWeight = FontWeight.Bold)
@@ -1095,6 +1099,7 @@ private fun MoreSectionsScreen(
         MoreSectionCard("الخطة الأسبوعية", "حوّل مهامك إلى جلسات مذاكرة قابلة للتنفيذ.", "↗", onPlanner)
         MoreSectionCard("إحصاءاتي", "راجع وقت التركيز والمهام التي أنجزتها.", "◔", onAnalytics)
         MoreSectionCard("تخصيص التجربة", "اضبط اسمك وهدفك اليومي والتذكير والمظهر.", "⚙", onSettings)
+        MoreSectionCard("مواقيت الصلاة", "احسب المواقيت حسب موقعك واضبط تذكيرًا محليًا.", "☾", onPrayerTimes)
         MoreSectionCard("تحديثات التطبيق", "افحص الإصدارات الجديدة واقرأ سجل التغييرات.", "↻", onUpdates)
         MoreSectionCard("الدعم الفني", "تواصل معنا إذا احتجت إلى مساعدة.", "?", onSupport)
     }
